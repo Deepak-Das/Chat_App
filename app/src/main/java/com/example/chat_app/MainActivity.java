@@ -3,15 +3,20 @@ package com.example.chat_app;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.bumptech.glide.Glide;
-import com.example.chat_app.Model.User;
+import com.example.chat_app.Adapters.ViewPagerAdapter;
+import com.example.chat_app.Fragments.ChatFragment;
+import com.example.chat_app.Fragments.UsersFragment;
+import com.example.chat_app.Models.User;
+import com.google.android.material.tabs.TabItem;
+import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textview.MaterialTextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -33,6 +38,10 @@ public class MainActivity extends AppCompatActivity {
     FirebaseUser currentUser;
     FirebaseDatabase database;
     DatabaseReference userRef;
+
+    TabLayout tabLayout;
+    TabItem tabChat,tabUsers;
+    ViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +80,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        tabLayout=findViewById(R.id.tab_layout);
+        viewPager=findViewById(R.id.view_pager);
+
+
+        ViewPagerAdapter viewPagerAdapter=new ViewPagerAdapter(getSupportFragmentManager());
+        viewPagerAdapter.addFragmentAndTitle(new ChatFragment(),"Chat");
+        viewPagerAdapter.addFragmentAndTitle(new UsersFragment(),"Users");
+
+        viewPager.setAdapter(viewPagerAdapter);
+        tabLayout.setupWithViewPager(viewPager);
+
+
+
     }
 
     @Override
@@ -96,4 +119,5 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
+
 }
