@@ -116,6 +116,7 @@ public class ChatFragment extends Fragment implements ActionHandler {
                     }
                 });
             }
+            mChatUsers.clear();
         }
     }
 
