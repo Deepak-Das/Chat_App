@@ -42,23 +42,23 @@ public class MessageAdpater extends RecyclerView.Adapter<MessageAdpater.MessageV
 
     @NonNull
     @Override
-    public MessageAdpater.MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         if(viewType==MESSAGE_TYPE_RIGHT) {
             LayoutInflater layoutInflater = LayoutInflater.from(mContext);
             View view = layoutInflater.inflate(R.layout.chat_right_item, parent, false);
 
-            return new MessageAdpater.MessageViewHolder(view);
+            return new MessageViewHolder(view);
         }else {
             LayoutInflater layoutInflater = LayoutInflater.from(mContext);
             View view = layoutInflater.inflate(R.layout.chat_left_item, parent, false);
 
-            return new MessageAdpater.MessageViewHolder(view);
+            return new MessageViewHolder(view);
         }
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MessageAdpater.MessageViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull MessageViewHolder holder, final int position) {
 
         holder.chatMsg.setText(mChats.get(position).getMessage());
         if(mPofileUrl.equals("default")){

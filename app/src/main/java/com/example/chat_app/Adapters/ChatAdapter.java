@@ -1,7 +1,6 @@
 package com.example.chat_app.Adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,28 +9,27 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.chat_app.Fragments.ChatFragment;
 import com.example.chat_app.Fragments.UsersFragment;
 import com.example.chat_app.InterfaceActionHandler.ActionHandler;
-import com.example.chat_app.MessageActivity;
 import com.example.chat_app.Models.User;
 import com.example.chat_app.R;
 import com.google.android.material.textview.MaterialTextView;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UsersViewHolder> {
+public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.UsersViewHolder> {
 
     private Context mContext;
     private List<User> mUsers;
     private ActionHandler mActionHandler;
 
-    public UsersAdapter(Context mContext, List<User> mUsers, UsersFragment mActionHandler) {
+    public ChatAdapter(Context mContext, List<User> mUsers, ActionHandler mActionHandler) {
         this.mContext = mContext;
         this.mUsers = mUsers;
-        this.mActionHandler= mActionHandler;
+        this.mActionHandler=mActionHandler;
     }
 
     @NonNull
@@ -58,7 +56,6 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UsersViewHol
             @Override
             public void onClick(View view) {
                 mActionHandler.usersItemClick(mContext,mUsers.get(position).getId());
-                mActionHandler.addUserChatList(mUsers.get(position).getId(),position);
             }
         });
     }

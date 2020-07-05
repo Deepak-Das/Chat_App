@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.chat_app.Models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
@@ -91,10 +92,12 @@ public class RegisterActivity extends AppCompatActivity {
                         if(task.isSuccessful()){
                             String user_id=auth.getCurrentUser().getUid();
 
-                            Map<String,Object> user=new HashMap<>();
-                            user.put("id", user_id);
-                            user.put("user_name",username);
-                            user.put("image_URL","default");
+                            User user=new User(user_id,username,"default");
+
+//                            Map<String,Object> user=new HashMap<>();
+//                            user.put("id", user_id);
+//                            user.put("user_name",username);
+//                            user.put("image_URL","default");
                             usersRef.child(user_id).setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {

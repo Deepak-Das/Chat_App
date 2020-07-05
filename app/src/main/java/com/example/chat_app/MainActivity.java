@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import com.bumptech.glide.Glide;
 import com.example.chat_app.Adapters.ViewPagerAdapter;
 import com.example.chat_app.Fragments.ChatFragment;
+import com.example.chat_app.Fragments.ProfileFragment;
 import com.example.chat_app.Fragments.UsersFragment;
 import com.example.chat_app.Models.User;
 import com.google.android.material.tabs.TabItem;
@@ -88,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
         ViewPagerAdapter viewPagerAdapter=new ViewPagerAdapter(getSupportFragmentManager());
         viewPagerAdapter.addFragmentAndTitle(new ChatFragment(),"Chat");
         viewPagerAdapter.addFragmentAndTitle(new UsersFragment(),"Users");
+        viewPagerAdapter.addFragmentAndTitle(new ProfileFragment(),"Profile");
 
         viewPager.setAdapter(viewPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);

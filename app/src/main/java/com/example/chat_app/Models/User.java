@@ -34,4 +34,13 @@ public class User {
     public void setImage_URL(String image_URL) {
         this.image_URL = image_URL;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id='" + id + '\'' +
+                ", user_name='" + user_name + '\'' +
+                ", image_URL='" + image_URL + '\'' +
+                '}';
+    }
 }
