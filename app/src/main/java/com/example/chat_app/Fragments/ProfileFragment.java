@@ -39,6 +39,8 @@ import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -165,6 +167,10 @@ public class ProfileFragment extends Fragment {
                         Uri downloadUri = task.getResult();
                         String mUri = downloadUri.toString();
                         Log.d(TAG, "onComplete: "+mUri);
+
+                        Map<String, Object> url=new HashMap<>();
+                        url.put("image_URL",mUri);
+                        userRef.updateChildren(url);
                         pd.dismiss();
                     } else {
                         // Handle failures

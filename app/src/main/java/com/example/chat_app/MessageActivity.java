@@ -8,9 +8,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -34,9 +36,10 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MessageActivity extends AppCompatActivity {
-
+    
     private CircleImageView mToolbarProfile_image;
     private MaterialTextView mToolbarUsername;
+    private String receiverProfileUri;
 
     private Toolbar mToolbar;
 
@@ -103,6 +106,8 @@ public class MessageActivity extends AppCompatActivity {
                 User user=dataSnapshot.getValue(User.class);
                 mToolbarUsername.setText(user.getUser_name());
 
+                receiverProfileUri =  user.getImage_URL();
+
                 if(user.getImage_URL().equals("default")){
                     mToolbarProfile_image.setImageResource(R.mipmap.ic_launcher);
                 }else{
@@ -155,7 +160,7 @@ public class MessageActivity extends AppCompatActivity {
                 for(DataSnapshot snapshot:dataSnapshot.getChildren()){
                     mChats.add(snapshot.getValue(Chat.class));
                 }
-                messageAdpater= new MessageAdpater(MessageActivity.this,mChats,"default");
+                messageAdpater= new MessageAdpater(getApplicationContext(),mChats,receiverProfileUri);
                 recyclerView.setAdapter(messageAdpater);
 
             }
