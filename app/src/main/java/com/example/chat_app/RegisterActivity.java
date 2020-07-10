@@ -76,14 +76,14 @@ public class RegisterActivity extends AppCompatActivity {
                 }else if (password.length()<6){
                     Toast.makeText(RegisterActivity.this, "password must be atleast 6 characters", Toast.LENGTH_SHORT).show();
                 }else{
-                    createNewUser(email,password,username);
+                    createNewUser(email,password,username,"Offline");
                 }
             }
         });
 
     }
 
-    public void createNewUser(String email, String password, final String username){
+    public void createNewUser(String email, String password, final String username, final String status){
         progressBar.setVisibility(View.VISIBLE);
         auth.createUserWithEmailAndPassword(email,password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -92,7 +92,7 @@ public class RegisterActivity extends AppCompatActivity {
                         if(task.isSuccessful()){
                             String user_id=auth.getCurrentUser().getUid();
 
-                            User user=new User(user_id,username,"default");
+                            User user=new User(user_id,username,"default",status);
 
 //                            Map<String,Object> user=new HashMap<>();
 //                            user.put("id", user_id);

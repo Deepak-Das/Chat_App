@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.chat_app.Models.User;
@@ -87,7 +88,7 @@ public class ProfileFragment extends Fragment {
                 if(user.getImage_URL().equals("default")){
                    my_profile_img.setImageResource(R.mipmap.ic_launcher);
                 }else {
-                    Glide.with(getContext()).load(user.getImage_URL()).into(my_profile_img);
+                    Glide.with(getActivity()).load(user.getImage_URL()).into(my_profile_img);
                 }
             }
 
@@ -173,8 +174,7 @@ public class ProfileFragment extends Fragment {
                         userRef.updateChildren(url);
                         pd.dismiss();
                     } else {
-                        // Handle failures
-                        // ...
+                        Toast.makeText(getContext(), "fail to upload", Toast.LENGTH_SHORT).show();
                     }
                 }
             });

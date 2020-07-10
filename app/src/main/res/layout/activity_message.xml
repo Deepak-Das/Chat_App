@@ -28,12 +28,28 @@
                 android:layout_height="30dp"
                 android:layout_marginRight="10dp" />
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/message_toolbar_username"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Username"
-                android:textColor="#FFF" />
+                android:orientation="vertical">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/message_toolbar_username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Username"
+                    android:textStyle="bold"
+                    android:textColor="#FFF" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/message_toolbar_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Status"
+                    android:textColor="#FFF" />
+
+            </LinearLayout>
+
+
 
         </androidx.appcompat.widget.Toolbar>
 

@@ -27,6 +27,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity {
@@ -59,9 +64,9 @@ public class MainActivity extends AppCompatActivity {
         database=FirebaseDatabase.getInstance();
         currentUser=FirebaseAuth.getInstance().getCurrentUser();
 
-        String user_id=currentUser.getUid();
+        String currentUser_id=currentUser.getUid();
 
-        userRef=database.getReference("Users").child(user_id);
+        userRef=database.getReference("Users").child(currentUser_id);
 
         userRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -71,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
                 if(user.getImage_URL().equals("default")){
                     profile_img.setImageResource(R.mipmap.ic_launcher);
                 }else{
-                    Glide.with(MainActivity.this).load(user.getImage_URL()).into(profile_img);
+                    Glide.with(getApplicationContext()).load(user.getImage_URL()).into(profile_img);
                 }
             }
 
@@ -122,4 +127,25 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat calenderfomate = new SimpleDateFormat("EEE dd, YYY (hh:mm)");
+        String lastSeenDate=calenderfomate.format(calendar.getTime());
+        status(lastSeenDate);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        status("online");
+    }
+
+
+
+    private void status(String status) {
+        Map<String, Object> status_field=new HashMap<>();
+        status_field.put("status",status);
+        userRef.updateChildren(status_field);
+    }
 }

@@ -12,13 +12,16 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.chat_app.Adapters.ChatAdapter;
 import com.example.chat_app.Adapters.MessageAdpater;
 import com.example.chat_app.Models.Chat;
+import com.example.chat_app.Models.ChatUser;
 import com.example.chat_app.Models.User;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textview.MaterialTextView;
@@ -30,15 +33,26 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.sql.Timestamp;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MessageActivity extends AppCompatActivity {
+
+    private static final String TAG = "MessageActivity";
     
     private CircleImageView mToolbarProfile_image;
     private MaterialTextView mToolbarUsername;
+    private MaterialTextView mToolbarStatus;
     private String receiverProfileUri;
 
     private Toolbar mToolbar;
@@ -51,6 +65,7 @@ public class MessageActivity extends AppCompatActivity {
     
     private AppCompatImageButton sendButton;
     private TextInputEditText sendMessageText;
+    private Boolean flag;
 
 
     private Intent intent;
@@ -78,6 +93,7 @@ public class MessageActivity extends AppCompatActivity {
 
         mToolbarProfile_image=findViewById(R.id.message_profile_image);
         mToolbarUsername=findViewById(R.id.message_toolbar_username);
+        mToolbarStatus=findViewById(R.id.message_toolbar_status);
 
         recyclerView=findViewById(R.id.message_recycler_view);
         recyclerView.setHasFixedSize(true);
@@ -91,6 +107,22 @@ public class MessageActivity extends AppCompatActivity {
         sendButton=findViewById(R.id.button_send);
         sendMessageText=findViewById(R.id.message_edit_text);
 
+        sendMessageText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//                dispalyTypingSatus(CharSequence);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
         intent=getIntent();
         receiverUserId=intent.getStringExtra("user_id");
         
@@ -103,15 +135,16 @@ public class MessageActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                User user=dataSnapshot.getValue(User.class);
-                mToolbarUsername.setText(user.getUser_name());
+                ChatUser chatuser=dataSnapshot.getValue(ChatUser.class);
+                mToolbarUsername.setText(chatuser.getUser_name());
+                mToolbarStatus.setText(chatuser.getStatus());
 
-                receiverProfileUri =  user.getImage_URL();
+                receiverProfileUri =  chatuser.getImage_URL();
 
-                if(user.getImage_URL().equals("default")){
+                if(chatuser.getImage_URL().equals("default")){
                     mToolbarProfile_image.setImageResource(R.mipmap.ic_launcher);
                 }else{
-                    Glide.with(MessageActivity.this).load(user.getImage_URL()).into(mToolbarProfile_image);
+                    Glide.with(getApplicationContext()).load(chatuser.getImage_URL()).into(mToolbarProfile_image);
                 }
 
                 readChat();
@@ -136,22 +169,31 @@ public class MessageActivity extends AppCompatActivity {
                 sendMessageText.setText("");
             }
         });
+
     }
 
     public void sendMessage(String sender_id, String receiver_id, String msg){
 
         Chat chat=new Chat(sender_id,receiver_id,msg);
 
-        databaseReference.child("Chats").child(sender_id+receiver_id).push().setValue(chat);
-        databaseReference.child("Chats").child(receiver_id+sender_id).push().setValue(chat);
+        Map<String, Object> message=new HashMap<>();
+        message.put("last_message",msg);
+
+        databaseReference.child("FriendList").child(sender_id).child(receiver_id).updateChildren(message);
+        databaseReference.child("FriendList").child(receiver_id).child(sender_id).updateChildren(message);
+
+        databaseReference.child("Chats").child(sender_id).child(receiver_id).push().setValue(chat);
+        databaseReference.child("Chats").child(receiver_id).child(sender_id).push().setValue(chat);
+
 
 
     }
 
+
     public void readChat(){
 
 
-        databaseReference.child("Chats").child(currentUser.getUid()+receiverUserId)
+        databaseReference.child("Chats").child(currentUser.getUid()).child(receiverUserId)
                 .addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -162,6 +204,7 @@ public class MessageActivity extends AppCompatActivity {
                 }
                 messageAdpater= new MessageAdpater(getApplicationContext(),mChats,receiverProfileUri);
                 recyclerView.setAdapter(messageAdpater);
+                messageAdpater.notifyDataSetChanged();
 
             }
 
@@ -170,5 +213,29 @@ public class MessageActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat calenderfomate = new SimpleDateFormat("EEE dd, YYY (hh:mm)");
+        String lastSeenDate=calenderfomate.format(calendar.getTime());
+        status(lastSeenDate);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        status("online");
+    }
+
+
+    private void status(String status) {
+
+        Map<String, Object> status_field=new HashMap<>();
+        status_field.put("status",status);
+        databaseReference.child("Users").child(currentUser.getUid()).updateChildren(status_field);
     }
 }

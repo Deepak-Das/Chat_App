@@ -17,7 +17,9 @@ import android.view.ViewGroup;
 import com.example.chat_app.Adapters.ChatAdapter;
 import com.example.chat_app.InterfaceActionHandler.ActionHandler;
 import com.example.chat_app.MessageActivity;
+import com.example.chat_app.Models.Chat;
 import com.example.chat_app.Models.ChatUser;
+import com.example.chat_app.Models.ChatUserID;
 import com.example.chat_app.Models.User;
 import com.example.chat_app.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,21 +28,25 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ChatFragment extends Fragment implements ActionHandler {
 
     private static final String TAG = "ChatFragment";
 
+
    private RecyclerView recyclerView;
    private ChatAdapter chatAdapter;
-   private List<User> mUsers;
+
    private List<ChatUser> mChatUsers;
+
    private DatabaseReference FriendListRef;
-   private DatabaseReference UserRef;
    private FirebaseUser auth;
 
     @Override
@@ -57,24 +63,24 @@ public class ChatFragment extends Fragment implements ActionHandler {
 
 
         FriendListRef= FirebaseDatabase.getInstance().getReference("FriendList");
-        UserRef=FirebaseDatabase.getInstance().getReference("Users");
 
         auth=FirebaseAuth.getInstance().getCurrentUser();
-        
+
         FriendListRef.child(auth.getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 mChatUsers.clear();
+
                 for (DataSnapshot snapshot:dataSnapshot.getChildren()){
-                   ChatUser chatUser=snapshot.getValue(ChatUser.class);
-                   mChatUsers.add(chatUser);
-                    Log.d(TAG, "onDataChange: "+chatUser.getUser_id());
+                    ChatUser chatUser=snapshot.getValue(ChatUser.class);
+
+                        mChatUsers.add(chatUser);
+
+                    chatAdapter=new ChatAdapter(getContext(), mChatUsers,ChatFragment.this);
+                    recyclerView.setAdapter(chatAdapter);
+                    chatAdapter.notifyDataSetChanged();
                 }
-
-                readUsers(mChatUsers);
-
             }
-
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -82,42 +88,7 @@ public class ChatFragment extends Fragment implements ActionHandler {
             }
         });
 
-
-
         return view;
-
-    }
-
-    private void readUsers(List<ChatUser> mChatUsers) {
-        mUsers=new ArrayList<>();
-        mUsers.clear();
-        if(mChatUsers.size()<=0){
-            chatAdapter=new ChatAdapter(getContext(),mUsers,ChatFragment.this);
-            recyclerView.setAdapter(chatAdapter);
-            chatAdapter.notifyDataSetChanged();
-
-        }else{
-            for(ChatUser chatUser:mChatUsers){
-                Log.d(TAG, "readUsers list: "+chatUser.getUser_id());
-
-                UserRef.child(chatUser.getUser_id()).addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        User user=dataSnapshot.getValue(User.class);
-                        mUsers.add(user);
-                        chatAdapter=new ChatAdapter(getContext(),mUsers,ChatFragment.this);
-                        recyclerView.setAdapter(chatAdapter);
-                        chatAdapter.notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-            }
-            mChatUsers.clear();
-        }
     }
 
     @Override

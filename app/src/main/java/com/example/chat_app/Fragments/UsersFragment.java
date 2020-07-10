@@ -19,6 +19,8 @@ import com.example.chat_app.Adapters.UsersAdapter;
 import com.example.chat_app.InterfaceActionHandler.ActionHandler;
 import com.example.chat_app.MainActivity;
 import com.example.chat_app.MessageActivity;
+import com.example.chat_app.Models.Chat;
+import com.example.chat_app.Models.ChatUser;
 import com.example.chat_app.Models.User;
 import com.example.chat_app.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -105,6 +107,7 @@ public class UsersFragment extends Fragment implements ActionHandler {
 
     @Override
     public void usersItemClick(Context context, String UserId) {
+
         Intent intent=new Intent(context, MessageActivity.class);
         intent.putExtra("user_id",UserId);
         context.startActivity(intent);
@@ -112,50 +115,39 @@ public class UsersFragment extends Fragment implements ActionHandler {
 
     @Override
     public void addUserChatList(final String receiverId, int position) {
-        
+
         final FirebaseUser currentUser=FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference receiverRef= userRef.child(receiverId);
         DatabaseReference senderRef= userRef.child(currentUser.getUid());
 
         final DatabaseReference FriendListRef=FirebaseDatabase.getInstance().getReference("FriendList");
-        //Add user to sender user
-        receiverRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                
-               User user=dataSnapshot.getValue(User.class);
-                Map<String,Object> user_id=new HashMap<>();
-                user_id.put("user_id",user.getId());
 
-               FriendListRef.child(currentUser.getUid()).child(receiverId).setValue(user_id);
+
+        User user=mUsers.get(position);
+        ChatUser chatUser=new ChatUser(user.getId(),user.getUser_name(), user.getImage_URL(),"offline","message",0);
+
+
+
+        FriendListRef.child(currentUser.getUid()).child(user.getId()).setValue(chatUser);
+
+        userRef.child(currentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                User currentUserObject=snapshot.getValue(User.class);
+                ChatUser chatUser=new ChatUser(currentUserObject.getId(),currentUserObject.getUser_name(), currentUserObject.getImage_URL(),"offline","message",0);
+                FriendListRef.child(receiverId).child(currentUser.getUid()).setValue(chatUser);
 
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-        //Add user to receiver user
-       senderRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                User user=dataSnapshot.getValue(User.class);
-                Map<String,Object> user_id=new HashMap<>();
-                user_id.put("user_id",user.getId());
-
-                FriendListRef.child(receiverId).child(currentUser.getUid()).setValue(user_id);
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            public void onCancelled(@NonNull DatabaseError error) {
 
             }
         });
 
-        
+
+
+
     }
 
 

@@ -12,21 +12,25 @@ import com.bumptech.glide.Glide;
 import com.example.chat_app.Fragments.ChatFragment;
 import com.example.chat_app.Fragments.UsersFragment;
 import com.example.chat_app.InterfaceActionHandler.ActionHandler;
+import com.example.chat_app.Models.Chat;
+import com.example.chat_app.Models.ChatUser;
 import com.example.chat_app.Models.User;
 import com.example.chat_app.R;
 import com.google.android.material.textview.MaterialTextView;
 
 import java.util.List;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.UsersViewHolder> {
 
     private Context mContext;
-    private List<User> mUsers;
+    private List<ChatUser> mUsers;
     private ActionHandler mActionHandler;
 
-    public ChatAdapter(Context mContext, List<User> mUsers, ActionHandler mActionHandler) {
+
+    public ChatAdapter(Context mContext, List<ChatUser> mUsers,ActionHandler mActionHandler) {
         this.mContext = mContext;
         this.mUsers = mUsers;
         this.mActionHandler=mActionHandler;
@@ -37,7 +41,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.UsersViewHolde
     public UsersViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         LayoutInflater layoutInflater=LayoutInflater.from(mContext);
-        View view=layoutInflater.inflate(R.layout.user_list_item,parent,false);
+        View view=layoutInflater.inflate(R.layout.chat_user_list_item,parent,false);
 
         return new UsersViewHolder(view);
     }
@@ -46,6 +50,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.UsersViewHolde
     public void onBindViewHolder(@NonNull UsersViewHolder holder, final int position) {
 
         holder.username.setText(mUsers.get(position).getUser_name());
+        holder.lastmsg.setText(mUsers.get(position).getLast_message());
         if(mUsers.get(position).getImage_URL().equals("default")){
             holder.profileImageView.setImageResource(R.mipmap.ic_launcher);
         }else {
@@ -69,12 +74,14 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.UsersViewHolde
 
         CircleImageView profileImageView;
         MaterialTextView username;
+        MaterialTextView lastmsg;
 
        public UsersViewHolder(@NonNull View itemView) {
            super(itemView);
 
            profileImageView=itemView.findViewById(R.id.user_list_profile_img);
            username=itemView.findViewById(R.id.user_list_unsername);
+           lastmsg=itemView.findViewById(R.id.chat_user_list_last_msg);
 
        }
    }
