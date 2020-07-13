@@ -124,7 +124,7 @@ public class UsersFragment extends Fragment implements ActionHandler {
 
 
         User user=mUsers.get(position);
-        ChatUser chatUser=new ChatUser(user.getId(),user.getUser_name(), user.getImage_URL(),"offline","message",0);
+        ChatUser chatUser=new ChatUser(user.getId(),user.getUser_name(), user.getImage_URL(),"offline"," ",0);
 
 
 
@@ -134,7 +134,7 @@ public class UsersFragment extends Fragment implements ActionHandler {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 User currentUserObject=snapshot.getValue(User.class);
-                ChatUser chatUser=new ChatUser(currentUserObject.getId(),currentUserObject.getUser_name(), currentUserObject.getImage_URL(),"offline","message",0);
+                ChatUser chatUser=new ChatUser(currentUserObject.getId(),currentUserObject.getUser_name(), currentUserObject.getImage_URL(),"offline"," ",0);
                 FriendListRef.child(receiverId).child(currentUser.getUid()).setValue(chatUser);
 
             }
